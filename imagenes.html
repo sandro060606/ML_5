@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ML5 - Imagenes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.10/p5.min.js"></script>
+    <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <body>
+    <script>
+      // Objeto que permitira el Reconocimiento (Clasificador)
+      let classifier;
+
+      // Objeto que contendra referenciada la imagen a clasificar
+      let img;
+
+      // Variables para alacenar los resultados
+      //label: Etiqueta (Ejemplo: gato, leon)
+      //Confidence: Confianza (aceptacion porcentual)
+      let label = "";
+      let confidence = "";
+
+      //1. preload (precarga) - funcion ml5
+      function preload() {
+        //MobileNet = modelo basico entrenado de recononimiento
+        classifier = ml5.imageClassifier("MobileNet");
+        //Referenciar imagen fisica a identificar
+        img = loadImage("images/objeto1.jpg");
+      }
+
+      //2. configuracion - funcion ml5
+      function setup() {
+        //Canvas = lienzo (renderizar, pintar)
+        createCanvas(400, 400);
+        //Se pasa la imagen para su clasificacion, el resultado > funcion
+        classifier.classify(img, gotResult);
+        //Renderizar la imagen JPG en el canvas
+        image(img, 0, 0, width, height);
+      }
+
+      // Callback function
+      function gotResult(results) {
+        //Mostrar resultados en consola
+        console.log(results);
+
+        // Mostrar resultado en el canvas
+        fill(255);
+        stroke(0);
+        textSize(18);
+        label = "Etiqueta: " + results[0].label;
+        confidence = "Confianza: " + nf(results[0].confidence, 0, 2);
+        //La funcion text, renderiza el contenifo en el CANVAS
+        text(label, 10, 360);
+        text(confidence, 10, 380);
+      }
+    </script>
+  </body>
+</html>

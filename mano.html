@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- P5.js adminsitrar componentes Web = canvas,  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.10/p5.min.js"></script>
+    <!-- ML5.js - Machine Learning -->
+    <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+  </head>
+  <body>
+
+
+    <script>
+      //Red Neuronal que utiliza un modelo para detener la mano
+      let handPose;
+      //Objeto para detectar el Input()
+      let video;
+      //Arreglo para guardar la ubicacion de las manos
+      let hands = [];
+
+      function preload() {
+        // Cargar el Modelo de reconocimiento de manos
+        handPose = ml5.handPose();
+      }
+
+      function setup() {
+        //Lienzo = vista previa del video + puntos de la mano
+        createCanvas(640, 480);
+        // CActivar la deteccion del video
+        video = createCapture(VIDEO);
+        video.size(640, 480);
+        video.hide();
+        //Inicio de la deteccion (recursividad)
+        handPose.detectStart(video, gotHands);
+      }
+      
+      //draw = Dibujar (renderiza puntos de ubicacion de la mano en el CANVAS)
+      function draw() {
+        //Dibujar cada cuadro del video en el canvas
+        image(video, 0, 0, width, height);
+
+        //Dibujar los puentos de referencia de cada
+        //for superior = iterar sobre cada mano
+        for (let i = 0; i < hands.length; i++) {
+          let hand = hands[i];
+          //for interior = iterar sobre cada dedo
+          for (let j = 0; j < hand.keypoints.length; j++) {
+            let keypoint = hand.keypoints[j];
+            fill(0, 255, 0);
+            noStroke();
+            circle(keypoint.x, keypoint.y, 5);
+          }
+        }
+      }
+
+      // Callback function
+      function gotHands(results) {
+        // El rsultado obtenido, se asigna al array de manos
+        hands = results;
+      }
+    </script>
+  </body>
+</html>
