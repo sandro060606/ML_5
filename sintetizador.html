@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintetizador</title>
+</head>
+<body>
+  
+  <h1>Sintetizador</h1>
+  <p>Algoritmo nativo del S.O. que permite a las aplicaciones (API) generar voces</p>
+
+  <form action="" autocomplete="off">
+    <div>
+      <select name="voices" id="voices">
+        <!-- Voces obtenidas del sistema -->
+         <option value="">Seleccione</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="pitch">Tono</label>
+      <input type="range" min="0" max="2" step="0.25" value="1" id="pitch">
+    </div>
+
+    <div>
+      <label for="rate">Velocidad</label>
+      <input type="range" min="0" max="2" step="0.25" value="1" id="rate">
+    </div>
+
+    <div>
+      <label for="volume">Volumen</label>
+      <input type="range" min="0" max="1" step="0.1" value="1" id="volume">
+    </div>
+
+    <div>
+      <label for="text">Mensaje</label>
+      <textarea name="text" id="text" rows="5" cols="25"></textarea>
+    </div>
+
+    <div>
+      <button type="button" id="start">Hablar</button>
+      <button type="button" id="cancel">Cancelar</button>
+    </div>
+  </form>
+
+<script>
+  //Referencias elementos formulario
+  const voiceOptions = document.querySelector("#voices")
+  //Controller tipo slide
+  const pitchInput = document.querySelector("#pitch")
+  const rateInput = document.querySelector("#rate")
+  const volumeInput = document.querySelector("#volume")
+  //Caja de Texto para mensaje
+  const textInput = document.querySelector("#text")
+
+  const startButton = document.querySelector("#start")
+  const cancelButton = document.querySelector("#cancel")
+
+  speechSynthesis.addEventListener("voiceschanged", () =>{
+    //Obtener la lista de voces
+    //console.log("evento voices")
+    const voices = speechSynthesis.getVoices()
+
+    //Recorrer el arreglo voices y poblar el <select>
+      //Option es un arreglo de todas las etiquetas <option> con el nombre de la voz
+    const options = voices.map((voice, index) => {
+      return `<option value='${index}'>${voice.name}</option>`
+    })
+    //Convertimos el arreglo option a datos que se pueda mostrar en el <select>
+    voiceOptions.innerHTML = options.join("")
+  })
+
+  startButton.addEventListener("click", () => {
+    //Mensaje (lo que va a leer)
+    const message = new SpeechSynthesisUtterance(textInput.value)
+    //¿Identifcar la voz?
+    const index = voiceOptions.selectedIndex
+
+    //Configurar el Sintetizador (opcional - predeterminar)
+    message.voice = speechSynthesis.getVoices()[index] //Voz
+    message.pitch = pitchInput.value //Tono
+    message.rate = rateInput.value   //Velocidad
+    message.volume = volumeInput.value //Volumen
+
+    speechSynthesis.speak(message)
+  })
+
+  cancelButton.addEventListener("click", () => {
+    speechSynthesis.cancel()
+  })
+
+  /* const amigos = ["Juan","Jose","Raul","Teresa","Roxana"]
+  const listaAmigos = amigos.join(" - ")
+  console.log(listaAmigos) */
+
+</script>
+
+</body>
+</html>
