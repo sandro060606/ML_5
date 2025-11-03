@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <form action="" autocomplete="off" id="form-login">
+    <div>
+      <label for="usuario">usuario</label>
+      <input type="text" id="usuario">
+    </div>
+    <div>
+      <label for="password">Contraseña</label>
+      <input type="password" id="password">
+    </div>
+    <div>
+       <!-- <canvas></canvas> -->
+        <label for="codigo">Codigo CANVAS</label>
+        <input type="text" id="codigo">
+    </div>
+    <button type="submit">Verificar</button>
+  </form>
+
+  <script>
+    const listaUsuarios = [
+      {nombre: 'juanito', clave: '123456', codigo: 'strawberry'},
+      {nombre: 'pablito', clave: 'abc12345', codigo: 'chair'},
+      {nombre: 'magaly', clave: 'firulais1', codigo: 'sun'}
+    ]
+
+    const formulario = document.querySelector("#form-login")
+    const usuario = document.querySelector("#usuario")
+    const password = document.querySelector("#password")
+    const codigo = document.querySelector("#codigo")
+
+    formulario.addEventListener("submit", (event) => {
+      event.preventDefault()
+      
+      for (let i = 0; i < listaUsuarios.length; i++){
+        if (listaUsuarios[i].nombre == usuario.value){
+          if(listaUsuarios[i].clave == password.value && listaUsuarios[i].codigo == codigo.value){
+            alert("Welcome " + listaUsuarios[i].nombre)
+          }
+        }
+      }
+      console.log(listaUsuarios)
+    })
+
+  </script>
+</body>
+</html>
