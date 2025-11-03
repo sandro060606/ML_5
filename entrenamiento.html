@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entrenar Red Neuronal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+  </head>
+  <body>
+    <script>
+      //3 Arreglos para gestionar cada grupo de Imagenes
+      let circles = [];
+      let squares = [];
+      let triangles = [];
+
+      //Clasificacion, entrenamiento - ML5
+      let shapeClassifier;
+
+      function preload() {
+        for (let i = 0; i < 100; i++) {
+          let index = nf(i + 1, 3, 0); //001, 002 ... 100
+          circles[i] = loadImage(`data/circle${index}.png`);
+          squares[i] = loadImage(`data/square${index}.png`);
+          triangles[i] = loadImage(`data/triangle${index}.png`);
+        }
+      }
+
+      function setup() {
+        //Configuracion RED NEURONAL
+        let options = {
+          inputs: [64, 64, 4],
+          task: "imageClassification",
+          debug: true,
+        };
+
+        //Nueva Red Neuronal de Conocimiento - ALGORITMO SUPERVISADO
+        shapeClassifier = ml5.neuralNetwork(options);
+
+        for (let i = 0; i < 100; i++) {
+          let input = { image: circles[i] }; //Input = entrada (imagen que se debe a utilizar a entrenar)
+          let target = { label: "Circulo" }; //Target = objetivo (etiqueta, identificador)
+
+          //Enviamo el circulo y su etiqueta a la red Neuronal
+          shapeClassifier.addData(input, target);
+
+          //Enviamos Cuadrados
+          shapeClassifier.addData({ image: squares[i] }, { label: "Cuadrado" });
+
+          //Enviamos Triangulos
+          shapeClassifier.addData( { image: triangles[i] }, { label: "Triangulo" });
+        }
+
+        //Normalizacion(revision de Inputs)
+        shapeClassifier.normalizeData();
+
+        //Iniciamos el Entrenamiento...
+        shapeClassifier.train({ epochs: 50 }, finishedTraining);
+      }
+
+      function finishedTraining() {
+        console.log("Entrenamiento terminado Correctamente");
+
+        //2 JSON + 1 BIN
+        shapeClassifier.save();
+      }
+    </script>
+  </body>
+</html>

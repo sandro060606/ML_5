@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analizando Modelo Creado</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+  </head>
+  <body>
+    <style>
+      body{
+        background-color: antiquewhite;
+      }
+    </style>
+
+
+    <script>
+      let shapeClassifier
+      let canvas
+      let resultDiv
+      let inputImage //puente (Controlador)
+      let clearButton
+
+      //Paso 1
+      function setup(){
+        canvas = createCanvas(400, 400)
+
+        let options = {
+          inputs: [64, 64, 4],
+          task:   'imageClassification'
+        }
+
+        //Red Neuronal (Ya existe - my model)
+        shapeClassifier = ml5.neuralNetwork(options)
+
+        //Ubicacion Fisica del Modelo
+        const modelDetails = {
+          model :   'mymodel/model.json',
+          metadata: 'mymodel/model_meta.json',
+          weights:  'mymodel/model.weights.bin'
+        }
+
+        background(255)
+
+        clearButton = createButton('Limpiar')
+        clearButton.mousePressed(cleanCanvas)
+        
+        resultDiv = createDiv('Modelo Cargado Correctamente')
+
+        //Necesitamos un Controlador/Puente/Intermediario
+        //Canvas > OBJETO > Modelo
+        inputImage = createGraphics(64, 64)
+        shapeClassifier.load(modelDetails, modelLoaded)
+
+      }
+
+      //Paso 2
+      function modelLoaded(){
+        //Modelo Preparado - iniciara la clasificacion
+        classifyImage()
+      }
+
+      //Paso 3
+      function classifyImage(){
+        //El objetivo imagen tomará la informacion del CANVAS
+        inputImage.copy(canvas, 0, 0, 400, 400, 0, 0, 64, 64)
+
+        shapeClassifier.classify({ image: inputImage }, goResults)
+      }
+
+      //Paso 4(FINAL)
+      function goResults(err, result){
+        if (err){
+          console.log(err)
+          return; //Fin goResults
+        }
+
+        //Si se logró identificar la forma
+        let label = result[0].label
+        let confidence = result[0].confidence
+        resultDiv.html(label + ' : ' + confidence)
+
+        //Volvemos a ejecutar la clasificacion por su el usuario continua dibujando
+        classifyImage() //Recursividad
+      }
+
+      function cleanCanvas(){
+        background(255)
+      }
+
+      function draw(){
+        //Boton Principal del mouse
+        if(mouseIsPressed){
+          strokeWeight(8)
+          line(mouseX, mouseY, pmouseX, pmouseY)
+        }
+      }
+
+    </script>
+
+  </body>
+</html>
